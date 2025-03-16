@@ -28,6 +28,33 @@
   comment: 由于原模型已经收敛，原地微调后反而稍差；学出来的矩阵值域量级约为 A: 0.05~0.1, B ~ 0.0057~0.0072
 ```
 
+⚪ train_cifar10
+
+```
+[version_2] 仅训练最后一层Linear
+  cmd: python train_cifar10.py -E 50 -lr 2e-4 --phase 0
+  epoch: 50 (19.55k steps, 2.33it/s, 14h5m20s)
+  bs: 32
+  grad_acc: 4
+  train_acc: ~0.27
+  val_acc: ~0.3
+  comment: 6k步时训练已收敛
+
+[version_3] 仅微调第一个Conv2dNormActivation块和最后的classififer块
+  cmd: python train_cifar10.py -E 20 -lr 2e-4 --phase 1 --load ./lightning_logs/version_2/checkpoints/epoch=36-step=14193.ckpt
+  epoch: 20 (7.819k steps, 0.83it/s, 11h38m7s)
+  train_acc: 0.3144
+  val_acc: 0.3581
+  comment: 验证集精度直线上涨但非常慢，似乎这样训不太行啊 :(
+
+[version_4] 微调所有层
+  cmd: python train_cifar10.py -E 50 -lr 2e-4 --phase -1 --load ./lightning_logs/version_3/checkpoints/epoch=18-step=7389.ckpt
+  epoch: 50 (19.51k steps, 0.4it/s, 2d5h15m11s)
+  train_acc: 0.7736
+  val_acc: 0.7448
+  comment: 仍未完全收敛，但涨幅空间不大了
+```
+
 ----
 2025年3月14日
 by Armit
