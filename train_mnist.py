@@ -27,7 +27,8 @@ from lightning.pytorch.callbacks import ModelCheckpoint
 
 torch.set_num_threads(torch.get_num_interop_threads())
 
-DATA_ROOT = Path('~/Data').expanduser()
+BASE_PATH = Path(__file__).parent
+DATA_ROOT = BASE_PATH / 'data'
 NUM_CLASS = 10
 
 

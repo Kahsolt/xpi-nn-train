@@ -7,10 +7,10 @@
 ⚪ train_mnist
 
 ```
-[version_0] 朴素MLP从头训练]
+[version_0] 朴素MLP从头训练
   cmd: python train_mnist.py
   model: MLP(28*28, 10, 128)
-  epoch: 100 (46.85k steps, 3h46m13s)
+  epoch: 100 (46.85k steps, 3h46m13s; 5h4m39s on rpi3)
   bs: 32
   grad_acc: 4
   lr: 2e-4
