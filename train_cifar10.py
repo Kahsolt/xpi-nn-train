@@ -2,7 +2,7 @@
 # Author: Armit
 # Create Time: 周五 2025/03/14
 
-# 用简单 MobidleNet_v3_small 训练 NMIST 数据集
+# 用简单 MobidleNet_v3_small 训练 CIFAR10 数据集
 
 import warnings ; warnings.filterwarnings(action='ignore', category=UserWarning)
 
@@ -142,7 +142,7 @@ def run(args):
 
     litdata = LitData(args)
     trainer = Trainer(
-        precision='bf16-mixed',
+        precision='32-true',
         max_epochs=args.epochs,
         accumulate_grad_batches=args.grad_acc,
         benchmark=True,

@@ -6,6 +6,7 @@
 
 import warnings ; warnings.filterwarnings(action='ignore', category=UserWarning)
 
+import os
 from pathlib import Path
 from argparse import ArgumentParser
 from typing import Tuple
@@ -20,15 +21,14 @@ from torchvision.datasets import MNIST
 from torchvision import transforms as T
 from torchmetrics.classification import MulticlassAccuracy
 
-from peft.mapping import get_peft_model
-from peft.tuners.lora import LoraConfig
 from lightning import LightningDataModule, LightningModule, Trainer, seed_everything
 from lightning.pytorch.callbacks import ModelCheckpoint
 
 torch.set_num_threads(torch.get_num_interop_threads())
 
 BASE_PATH = Path(__file__).parent
-DATA_ROOT = BASE_PATH / 'data'
+DATA_ROOT = Path(os.getenv('DATA_ROOT', '~/Datasets')).expanduser()
+print('DATA_ROOT:', DATA_ROOT)
 NUM_CLASS = 10
 
 
@@ -129,18 +129,9 @@ def run(args):
     else:
         print('>> Fresh train!')
 
-    if args.lora:
-        peft_cfg = LoraConfig(
-            r=args.lora,
-            lora_dropout=0.2,
-            target_modules=['mlp.0', 'mlp.2'],
-            bias='none',
-        )
-        litmodel.model = get_peft_model(litmodel.model, peft_cfg)
-
     litdata = LitData(args)
     trainer = Trainer(
-        precision='bf16-mixed',
+        precision='32-true',
         max_epochs=args.epochs,
         accumulate_grad_batches=args.grad_acc,
         benchmark=True,
@@ -161,7 +152,6 @@ if __name__ == '__main__':
     parser.add_argument('-g', '--grad_acc',       default=4,     type=int,   help='Grad accumulate steps (default: %(default)s)')
     parser.add_argument('-lr', '--learning_rate', default=2e-4,  type=float, help='Learning rate (default: %(default)s)')
     parser.add_argument('-j', '--num_workers',    default=0,     type=int,   help='Num workers (default: %(default)s)')
-    parser.add_argument('-r', '--lora',           default=0,     type=int,   help='LoRA rank (default: %(default)s)')
     parser.add_argument('--load')
     parser.add_argument('--seed', default=114514, type=int)
     args = parser.parse_args()
