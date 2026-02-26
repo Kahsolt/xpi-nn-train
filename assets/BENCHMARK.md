@@ -1,12 +1,8 @@
-# mnist-playground
-
-    Train toy neural networks on Orange Pi Zero 3 :)
+### benchmarks
 
 ----
 
-### MNIST on opiz3
-
-⚪ train_mnist
+⚪ mnist
 
 ```
 [version_0] 朴素MLP从头训练
@@ -37,7 +33,7 @@
   comment: 由于原模型已经收敛，原地微调后反而稍差；学出来的矩阵值域量级约为 A: 0.05~0.1, B ~ 0.0057~0.0072
 ```
 
-⚪ train_cifar10
+⚪ cifar10
 
 分阶段微调
 
@@ -74,7 +70,7 @@
   epoch: 50 (19.51k steps, 0.4it/s; 0.5it/s on fmx1)
 ```
 
-⚪ test_ddp
+⚪ cifar10 (ddp)
 
 ```
 [rk3399集群 (6卡)] 直接全量微调
@@ -87,7 +83,3 @@
   lr: 1e-3
   test_acc: 71.146%
 ```
-
-----
-2025年3月14日
-by Armit

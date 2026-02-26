@@ -2,7 +2,8 @@
 __pycache__/
 
 # data
-data/
+DATA_ROOT/
 
 # log
+logs/
 lightning_logs/

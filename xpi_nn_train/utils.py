@@ -1,13 +1,71 @@
 #!/usr/bin/env python3
-# Author: Armit
-# Create Time: 周四 2026/02/26 
 
 import os
 from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
+ROOT_PATH = BASE_PATH.parent
 
 if 'DATA_ROOT' in os.environ:
   DATA_ROOT = Path.expanduser(os.environ['DATA_ROOT'])
+  assert DATA_ROOT.is_dir(), f"DATA_ROOT detected in envvar, but path {DATA_ROOT} not exists"
 else:
-  DATA_ROOT = BASE_PATH / 'DATA_ROOT'
+  DATA_ROOT = ROOT_PATH / 'DATA_ROOT'
+  DATA_ROOT.mkdir(exist_ok=True)
+# logging folder for torch/torch_ddp backends
+LOG_PATH = ROOT_PATH / 'logs'
+
+
+def seed_everything(seed:int=114514):
+  import random
+  import numpy as np
+  import torch
+
+  os.environ["PL_GLOBAL_SEED"] = str(seed)
+  random.seed(seed)
+  np.random.seed(seed)
+  torch.manual_seed(seed)
+  torch.cuda.manual_seed(seed)
+
+
+SERIALIZERS = [
+  str,
+  repr,
+  lambda x: f'Error serialize type {type(x)}',
+]
+
+def safe_serialize(obj:object):
+  for serializer in SERIALIZERS:
+    try:
+      return serializer(obj)
+    except:
+      pass
+
+
+def get_next_torch_log_folder() -> Path:
+  i = 0
+  dp = LOG_PATH / f'version_{i}'
+  while dp.is_dir():
+    i += 1
+    dp = LOG_PATH / f'version_{i}'
+  dp.mkdir(parents=True)
+  return dp
+
+
+class ValueWindow:
+
+  def __init__(self, nlen:int=100):
+    self.nlen = nlen
+    self.vals: list[float] = []
+    self.sum = 0.0
+
+  def append(self, v:float):
+    if len(self.vals) >= self.nlen:
+      self.sum -= self.vals.pop(0)
+    self.vals.append(v)
+    self.sum += v
+
+  @property
+  def mean(self) -> float:
+    if not self.vals: return 0.0
+    return self.sum / len(self.vals)

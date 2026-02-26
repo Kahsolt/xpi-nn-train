@@ -8,11 +8,47 @@
 
 ### Quickstart
 
+```shell
+# clone this repo
+git clone https://gitee.com/kahsolt/xpi-nn-train.git
+cd xpi-nn-train
+
+# create venv (optional but recommended!!)
+conda create -n xpi python==3.13
+conda create xpi
+# install dependencies
+pip install -r requirements.txt
+
+# run simple examples
+python -m xpi_nn_train.examples.train_mnist -K torch -M MLP
+python -m xpi_nn_train.examples.train_mnist -K lightning -M LeNet
+python -m xpi_nn_train.examples.finetune_cifar10_mbv3 -K torch -F 1
+# run LoRA finetune
+python -m xpi_nn_train.examples.train_mnist -K lightning -M LeNet -r 4 --load ./lightning_logs/version_1/checkpoints/epoch=4-step=2157.ckpt
+# run ddp (hardcoded, temporarily only works on my machine 😈
+python -m xpi_nn_train.examples.finetune_cifar10_mbv3 -K torch_ddp
 ```
-pip install xpi-nn-train
-python -m xpi_nn_train.tools.install_default_backends -y
-python -m xpi_nn_train.tools.test_train_mnist
-```
+
+### Backends
+
+ℹ We focus on CV models implemented in PyTorch & TorchVision
+
+#### Models providers
+
+| name | comment |
+| :-: | :-: |
+| torchvision    | clf/seg/det |
+| LeNet          | MNIST clf |
+| ESPCN          | lightweight sr |
+| MLP            |  |
+| (user-defined) |  |
+
+#### Trainer backends
+
+| name | distributed | peft (LoRA etc.) |
+| :-: | :-: | :-: |
+| torch     | √ | x |
+| lightning | x | √ |
 
 ### Tested Devices
 
@@ -20,30 +56,3 @@ python -m xpi_nn_train.tools.test_train_mnist
 - H618: OrangePi Zero 3
 - RK3576: LubanCat3
 - RK3399: FMX1 Pro, MRK3399
-
-### Backends
-
-ℹ xpi-nn-train is a bare framework, you need configure backends to make it work.
-
-#### Model providers
-
-Thanks to all the open-source model providers 🎉
-
-| name | supported | comment |
-| :-: | :-: | :-: |
-| torchvision    |  |  |
-| (user-defined) |  |  |
-
-#### Trainer backends
-
-| name | distributed | peft (LoRA etc.) | comment |
-| :-: | :-: | :-: |
-| torch     | √ | √ |  |
-| lightning | √ | √ |  |
-
-#### IO backends
-
-| name | type | comment |
-| :-: | :-: | :-: |
-| torchvision | img |  |
-| datatsets   | img |  |
