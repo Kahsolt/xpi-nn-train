@@ -63,8 +63,8 @@ def run_train(model:nn.Module, dataset:str, args:Namespace=None):
       print(f">> rank = {rank} is initialized")
 
       model = DistributedDataParallel(model)
-      train_loader = get_dataloader(dataset, 'train', batch_size=args.batch_size, num_workers=args.num_workers, world_size=world_size)
-      test_loader = get_dataloader(dataset, 'val', batch_size=args.batch_size, num_workers=args.num_workers, world_size=world_size)
+      train_loader = get_dataloader(dataset, 'train', batch_size=args.batch_size, num_workers=args.num_workers, world_size=world_size, rank=rank)
+      test_loader = get_dataloader(dataset, 'val', batch_size=args.batch_size, num_workers=args.num_workers, world_size=world_size, rank=rank)
       run_train_ddp(model, train_loader, test_loader)
     except Exception as e:
       print(e)

@@ -29,9 +29,13 @@ python -m xpi_nn_train.examples.train_mnist -K lightning -M LeNet -r 4 --load ./
 python -m xpi_nn_train.examples.finetune_cifar10_mbv3 -K torch_ddp
 ```
 
-### Backends
+### Configurations
 
 ℹ We focus on CV models implemented in PyTorch & TorchVision
+
+#### Envvars
+
+- DATA_ROOT: folder path for auto-downloaded datasets, defaults to `./DATA_ROOT`
 
 #### Models providers
 

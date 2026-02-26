@@ -23,12 +23,15 @@ def list_datasets():
   return [k for k, v in vars(D).items() if v not in blacklist and type(v) == type(object) and issubclass(v, VisionDataset)]
 
 
-def get_dataset(name:str, split:str='train', transform:Callable=None) -> VisionDataset:
+def get_dataset(name:str, split:str='train', is_train:bool=None, transform:Callable=None) -> VisionDataset:
   assert name in list_datasets(), f"dataset {name} not in supported list"
   global notify_data_root
   if notify_data_root:
     print(f'DATA_ROOT: {DATA_ROOT}')
     notify_data_root = False
+
+  # fix for EMNIST
+  is_train = split == 'train' if is_train is None else is_train
 
   # add well-known transform
   if transform is None:
@@ -74,7 +77,7 @@ def get_dataset(name:str, split:str='train', transform:Callable=None) -> VisionD
   if 'split' in params:
     args['split'] = split
   if 'train' in params:
-    args['train'] = split == 'train'
+    args['train'] = is_train
   if 'transform' in params:
     args['transform'] = transform
   if 'download' in params:
@@ -84,9 +87,11 @@ def get_dataset(name:str, split:str='train', transform:Callable=None) -> VisionD
   return dataset
 
 
-def get_dataloader(name:str, split:str='train', batch_size:int=16, transform:Callable=None, num_workers:int=0, world_size:int=1, rank:int=-1) -> DataLoader:
-  dataset = get_dataset(name, split, transform)
-  is_train = split == 'train'
+def get_dataloader(name:str, split:str='train', is_train:bool=None, batch_size:int=16, transform:Callable=None, num_workers:int=0, world_size:int=1, rank:int=-1) -> DataLoader:
+  # fix for EMNIST
+  is_train = split == 'train' if is_train is None else is_train
+
+  dataset = get_dataset(name, split, transform, is_train)
   if world_size > 1:
     assert rank >= 0, 'must set "rank" in distributed scenario'
     sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=is_train, drop_last=is_train)
