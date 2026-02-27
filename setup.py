@@ -13,11 +13,11 @@ from setuptools import setup, Command
 # Package meta-data.
 NAME = 'xpi-nn-train'
 DESCRIPTION = 'A lightweight toolbox for NN model train on ARM SoC devices like RaspberryPi, OrangePi, LubanCat, etc.'
-URL = 'https://github.com/Kahsolt/xpi-nn-train'
+URL = 'https://gitee.com/kahsolt/xpi-nn-train'
 EMAIL = 'kahsolt@qq.com'
 AUTHOR = 'Kahsolt'
 REQUIRES_PYTHON = '>=3.10.0'
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 # What packages are required for this module to be executed?
 REQUIRED = [
   'torch',

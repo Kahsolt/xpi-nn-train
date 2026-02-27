@@ -6,9 +6,7 @@
 
 **⚠ In most cases you'll NEVER train a model on low-end SoC(s), this repo is mainly for CPU benchmark purpose.** ;)
 
-### Quickstart
-
-⚪ Installation
+### Installation
 
 You can either install from PyPI:
 
@@ -16,7 +14,7 @@ You can either install from PyPI:
 # create venv (optional but recommended!!)
 conda create -n xpi python==3.13    # py3.10 or later
 conda create xpi
-# install minimal version (torch)
+# install minimal version (torch, recommened!!)
 pip install xpi-nn-train
 # install full version (+lightning+peft)
 pip install xpi-nn-train[full]
@@ -37,25 +35,27 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-⚪ Usage
+### Usage
 
-Use via command line:
+⚪ Use via API
+
+Note that `xpi-nn-train` is opt for **image classification** benchmarking,
+
+- for the basics, see [tutorial.ipynb](./examples/tutorial.ipynb)
+- for other tasks please refer to [espcn.ipynb](./examples/espcn.ipynb)
+
+⚪  Use via command line
 
 ```shell
 # run simple examples
 python -m xpi_nn_train.examples.train_mnist -K torch -M MLP
-python -m xpi_nn_train.examples.train_mnist -K lightning -M LeNet
 python -m xpi_nn_train.examples.finetune_cifar10_mbv3 -K torch -F 1
-# run LoRA finetune
+# run LoRA finetune (need full version)
+python -m xpi_nn_train.examples.train_mnist -K lightning -M LeNet
 python -m xpi_nn_train.examples.train_mnist -K lightning -M LeNet -r 4 --load ./lightning_logs/version_1/checkpoints/epoch=4-step=2157.ckpt
 # run ddp (hardcoded, temporarily only works on my machine 😈
-python -m xpi_nn_train.examples.finetune_cifar10_mbv3 -K torch_ddp
+python -m xpi_nn_train.examples.finetune_cifar10_mbv3_ddp
 ```
-
-Use via API:
-
-👉 See [./examples/tutorial.ipynb](./examples/tutorial.ipynb)  
-Note that `xpi-nn-train` is opt for **image classification** benchmarking, for other tasks you'll read [./examples/espcn.ipynb](./examples/espcn.ipynb)  
 
 ### Configurations
 
@@ -69,7 +69,7 @@ Note that `xpi-nn-train` is opt for **image classification** benchmarking, for o
 
 | name | comment |
 | :-: | :-: |
-| torchvision    | clf/seg/det |
+| torchvision    | clf |
 | LeNet          | MNIST clf |
 | ESPCN          | lightweight sr |
 | MLP            |  |

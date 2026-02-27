@@ -7,15 +7,20 @@ BASE_PATH = Path(__file__).parent   # base path for pypi package
 ROOT_PATH = BASE_PATH.parent        # root path for git project
 IS_PYPI = 'site-packages' in str(BASE_PATH)
 
-# datasets folder
+# decide datasets & logging folder
+if IS_PYPI:
+  DATA_ROOT = BASE_PATH / 'DATA_ROOT'
+  LOG_PATH = Path('.') / 'logs'
+else:
+  DATA_ROOT = ROOT_PATH / 'DATA_ROOT'
+  LOG_PATH = ROOT_PATH / 'logs'
+# override by envvar
 if 'DATA_ROOT' in os.environ:
   DATA_ROOT = Path.expanduser(os.environ['DATA_ROOT'])
   assert DATA_ROOT.is_dir(), f"DATA_ROOT detected in envvar, but path {DATA_ROOT} not exists"
-else:
-  DATA_ROOT = (BASE_PATH if IS_PYPI else ROOT_PATH) / 'DATA_ROOT'
-  DATA_ROOT.mkdir(exist_ok=True)
-# logging folder for torch backends
-LOG_PATH = (Path('.') if IS_PYPI else ROOT_PATH) / 'logs'
+if 'LOG_PATH' in os.environ:
+  LOG_PATH = Path.expanduser(os.environ['LOG_PATH'])
+  assert LOG_PATH.is_dir(), f"LOG_PATH detected in envvar, but path {LOG_PATH} not exists"
 
 
 def seed_everything(seed:int=114514):
