@@ -16,10 +16,10 @@ else:
   LOG_PATH = ROOT_PATH / 'logs'
 # override by envvar
 if 'DATA_ROOT' in os.environ:
-  DATA_ROOT = Path.expanduser(os.environ['DATA_ROOT'])
+  DATA_ROOT = Path.expanduser(Path(os.environ['DATA_ROOT']))
   assert DATA_ROOT.is_dir(), f"DATA_ROOT detected in envvar, but path {DATA_ROOT} not exists"
 if 'LOG_PATH' in os.environ:
-  LOG_PATH = Path.expanduser(os.environ['LOG_PATH'])
+  LOG_PATH = Path.expanduser(Path(os.environ['LOG_PATH']))
   assert LOG_PATH.is_dir(), f"LOG_PATH detected in envvar, but path {LOG_PATH} not exists"
 
 

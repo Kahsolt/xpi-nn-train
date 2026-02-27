@@ -13,7 +13,7 @@ You can either install from PyPI:
 ```shell
 # create venv (optional but recommended!!)
 conda create -n xpi python==3.13    # py3.10 or later
-conda create xpi
+conda activate xpi
 # install minimal version (torch, recommened!!)
 pip install xpi-nn-train
 # install full version (+lightning+peft)
@@ -25,7 +25,7 @@ or install locally:
 ```shell
 # create venv (optional but recommended!!)
 conda create -n xpi python==3.13    # py3.10 or later
-conda create xpi
+conda activate xpi
 # clone this repo
 git clone https://gitee.com/kahsolt/xpi-nn-train.git
 cd xpi-nn-train
@@ -44,7 +44,7 @@ Note that `xpi-nn-train` is opt for **image classification** benchmarking,
 - for the basics, see [tutorial.ipynb](./examples/tutorial.ipynb)
 - for other tasks please refer to [espcn.ipynb](./examples/espcn.ipynb)
 
-⚪  Use via command line
+⚪ Use via command line
 
 ```shell
 # run simple examples
@@ -63,7 +63,8 @@ python -m xpi_nn_train.examples.finetune_cifar10_mbv3_ddp
 
 #### Envvars
 
-- DATA_ROOT: folder path for auto-downloaded datasets, defaults to `./DATA_ROOT`
+- DATA_ROOT: folder path for auto-downloaded datasets, defaults to `<site-packages>/xpi_nn_train/DATA_ROOT` (PyPI install) or `<xpi-nn-train>/DATA_ROOT` (local install)
+- LOG_PATH: folder path for training logs, defaults to `./logs` (PyPI install) or `<xpi-nn-train>/logs` (local install)
 
 #### Models providers
 
