@@ -67,20 +67,25 @@ def get_dataset(name:str, split:str='train', is_train:bool=None, transform:Calla
           T.ToTensor(),
           T.Normalize(CIFAR10_MEAN, CIFAR10_STD),
         ])
+    else:
+      transform = T.Compose([
+        T.ToTensor(),
+      ])
 
   # build args from params
   dataset_builder = getattr(D, name)
   params = signature(dataset_builder).parameters
+  has_kwargs = 'kwargs' in params
   args = {}
-  if 'root' in params:
+  if 'root' in params or has_kwargs:
     args['root'] = DATA_ROOT
-  if 'split' in params:
+  if 'split' in params or has_kwargs:
     args['split'] = split
-  if 'train' in params:
+  if 'train' in params or has_kwargs:
     args['train'] = is_train
-  if 'transform' in params:
+  if 'transform' in params or has_kwargs:
     args['transform'] = transform
-  if 'download' in params:
+  if 'download' in params or has_kwargs:
     args['download'] = True
 
   dataset = dataset_builder(**args)
@@ -91,7 +96,7 @@ def get_dataloader(name:str, split:str='train', is_train:bool=None, batch_size:i
   # fix for EMNIST
   is_train = split == 'train' if is_train is None else is_train
 
-  dataset = get_dataset(name, split, transform, is_train)
+  dataset = get_dataset(name, split, is_train, transform)
   if world_size > 1:
     assert rank >= 0, 'must set "rank" in distributed scenario'
     sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=is_train, drop_last=is_train)

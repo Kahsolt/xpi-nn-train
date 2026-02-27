@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-import os
 import json
-import socket
 from time import time
 from argparse import Namespace
 
@@ -13,44 +11,7 @@ from torch.optim import Adam
 import torch.distributed as dist
 
 from xpi_nn_train.datasets.torchvision import DataLoader
-from xpi_nn_train.utils import seed_everything, ValueWindow, safe_serialize, get_next_torch_log_folder
-
-
-def setup_ddp_env() -> int:
-  '''
-  I have an RK3399 cluster consisting of 1 * FMX1-Pro and 5 * MRK3399:
-    fmx1  master
-    mrk0  node0
-    mrk1  node1
-    mrk2  node2
-    mrk3  node3
-    mrk4  node4
-  Just hardcode it so far :(
-  '''
-
-  hostname = socket.gethostname()
-  rank = 0 if hostname.startswith('fmx') else (int(hostname[-1]) + 1)
-
-  os.environ['MASTER_ADDR'] = 'fmx1'
-  os.environ['MASTER_PORT'] = '8888'
-  os.environ['WORLD_SIZE'] = '6'
-  os.environ['RANK'] = str(rank)
-  os.environ['LOCAL_WORLD_SIZE'] = '1'
-  os.environ['LOCAL_RANK'] = '0'
-
-  print(f'>> Hostname: {hostname}')
-  print('>> Env:')
-  for name in [
-    'MASTER_ADDR',
-    'MASTER_PORT',
-    'WORLD_SIZE',
-    'RANK',
-    'LOCAL_WORLD_SIZE',
-    'LOCAL_RANK',
-  ]:
-    print(f'  {name}: {os.getenv(name)}')
-
-  return rank
+from xpi_nn_train.utils import seed_everything, ValueWindow, safe_serialize, get_next_log_folder
 
 
 # https://www.cnblogs.com/zhangxianrong/p/18379062
@@ -59,10 +20,9 @@ def run_train_ddp(model:nn.Module, train_loader:DataLoader, test_loader:DataLoad
   seed_everything(args.seed)
 
   dtype = torch.float32  # fp16/bf16 on most SoC is slow
-  rank = setup_ddp_env()
+  rank = dist.get_rank()
 
   if rank == 0:
-    print('[args]')
     print(args)
     print('[param_cnt]')
     print('   trainable:', sum(p.numel() for p in model.parameters() if p.requires_grad))
@@ -136,7 +96,7 @@ def run_train_ddp(model:nn.Module, train_loader:DataLoader, test_loader:DataLoad
     ts_done = time() - ts_init
     print(f'Done: {ts_done:.5f}s')
 
-    save_path = get_next_torch_log_folder()
+    save_path = get_next_log_folder()
     print(f'>> Save to {save_path}')
     torch.save({
       'model': model.state_dict(),

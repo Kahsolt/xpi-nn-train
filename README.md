@@ -8,17 +8,40 @@
 
 ### Quickstart
 
+⚪ Installation
+
+You can either install from PyPI:
+
 ```shell
+# create venv (optional but recommended!!)
+conda create -n xpi python==3.13    # py3.10 or later
+conda create xpi
+# install minimal version (torch)
+pip install xpi-nn-train
+# install full version (+lightning+peft)
+pip install xpi-nn-train[full]
+```
+
+or install locally:
+
+```shell
+# create venv (optional but recommended!!)
+conda create -n xpi python==3.13    # py3.10 or later
+conda create xpi
 # clone this repo
 git clone https://gitee.com/kahsolt/xpi-nn-train.git
 cd xpi-nn-train
-
-# create venv (optional but recommended!!)
-conda create -n xpi python==3.13
-conda create xpi
 # install dependencies
 pip install -r requirements.txt
+# install locally
+pip install -e .
+```
 
+⚪ Usage
+
+Use via command line:
+
+```shell
 # run simple examples
 python -m xpi_nn_train.examples.train_mnist -K torch -M MLP
 python -m xpi_nn_train.examples.train_mnist -K lightning -M LeNet
@@ -28,6 +51,11 @@ python -m xpi_nn_train.examples.train_mnist -K lightning -M LeNet -r 4 --load ./
 # run ddp (hardcoded, temporarily only works on my machine 😈
 python -m xpi_nn_train.examples.finetune_cifar10_mbv3 -K torch_ddp
 ```
+
+Use via API:
+
+👉 See [./examples/tutorial.ipynb](./examples/tutorial.ipynb)  
+Note that `xpi-nn-train` is opt for **image classification** benchmarking, for other tasks you'll read [./examples/espcn.ipynb](./examples/espcn.ipynb)  
 
 ### Configurations
 

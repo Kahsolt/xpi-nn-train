@@ -1,8 +1,15 @@
+# meta
 .vscode
 __pycache__/
 
+# distro
+build/
+dist/
+*.egg-info/
+
 # data
 DATA_ROOT/
+xpi_nn_train/DATA_ROOT/
 
 # log
 logs/

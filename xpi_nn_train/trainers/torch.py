@@ -10,7 +10,7 @@ import torch.nn.functional as F
 from torch.optim import Adam
 
 from xpi_nn_train.datasets.torchvision import DataLoader
-from xpi_nn_train.utils import seed_everything, ValueWindow, safe_serialize, get_next_torch_log_folder
+from xpi_nn_train.utils import seed_everything, ValueWindow, safe_serialize, get_next_log_folder
 
 
 def run_train_native(model:nn.Module, train_loader:DataLoader, test_loader:DataLoader, args:Namespace):
@@ -27,9 +27,7 @@ def run_train_native(model:nn.Module, train_loader:DataLoader, test_loader:DataL
     dtype = torch.float32  # fp16/bf16 on most SoC is slow
   seed_everything(args.seed)
 
-  print('[model]')
   print(model)
-  print('[args]')
   print(args)
   print('[param_cnt]')
   print('   trainable:', sum(p.numel() for p in model.parameters() if p.requires_grad))
@@ -106,7 +104,7 @@ def run_train_native(model:nn.Module, train_loader:DataLoader, test_loader:DataL
   ts_done = time() - ts_init
   print(f'Done: {ts_done:.5f}s')
 
-  save_path = get_next_torch_log_folder()
+  save_path = get_next_log_folder()
   print(f'>> Save to {save_path}')
   torch.save({
     'model': model.state_dict(),

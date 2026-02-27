@@ -29,7 +29,7 @@ def get_trainer_args() -> Namespace:
   return args
 
 
-def run_train(model:nn.Module, dataset:str, args:Namespace=None):
+def run_train(model:str|nn.Module, dataset:str, args:Namespace=None):
   args = args or get_trainer_args()
 
   if args.backend == 'torch':
@@ -53,10 +53,9 @@ def run_train(model:nn.Module, dataset:str, args:Namespace=None):
     from torch.nn.parallel import DistributedDataParallel
 
     from xpi_nn_train.datasets.torchvision import get_dataloader
-    from xpi_nn_train.trainers.torch_ddp import setup_ddp_env, run_train_ddp
+    from xpi_nn_train.trainers.torch_ddp import run_train_ddp
 
     try:
-      setup_ddp_env()
       dist.init_process_group('gloo', init_method='env://')
       world_size = dist.get_world_size()
       rank = dist.get_rank()
