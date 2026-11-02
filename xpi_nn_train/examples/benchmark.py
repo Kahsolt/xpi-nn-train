@@ -14,7 +14,7 @@ from xpi_nn_train.models.torchvision import get_model_builder
 from xpi_nn_train.datasets.torchvision import DataLoader, get_dataloader
 from xpi_nn_train.trainers import get_trainer_args
 from xpi_nn_train.utils import merge_namespaces, seed_everything, ValueWindow
-from xpi_nn_train.torch_utils import resolve_device, resolve_dtype, torch_backends_info
+from xpi_nn_train.torch_utils import resolve_device, resolve_dtype, torch_backends_setup, torch_backends_info
 
 MODELS = [
   'mobilenet_v3_small',
@@ -178,6 +178,7 @@ if __name__ == '__main__':
 
   args = merge_namespaces(bench_args, train_args)
 
+  torch_backends_setup()
   torch_backends_info()
 
   if args.run_all:
@@ -186,12 +187,14 @@ if __name__ == '__main__':
       args.model = model
       fps = run(args)
       results.append((model, fps))
+      torch.cuda.empty_cache()
+      torch.cuda.ipc_collect()
+      torch.cuda.synchronize()
       sleep(10)
     print()
     print('=' * 72)
-    print(f'| Model | FPS |')
-    print(f'| :-: | :-: |')
-    for model, fps in results:
-      print(f'| {model} | {fps:.2f} |')
+    print('| ' + ' | '.join([model for model, _ in results]) + ' |')
+    print('|' + f' :-: |' * len(results))
+    print('| ' + ' | '.join([f'{fps:.2f}' for _, fps in results]) + ' |')
   else:
     run(args)

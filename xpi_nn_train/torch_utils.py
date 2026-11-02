@@ -107,3 +107,50 @@ def torch_backends_info():
   print('  is_available:', torch.backends.opt_einsum.is_available())
   print('[nnpack]')
   print('  is_available:', torch.backends.nnpack.is_available())
+
+
+def enable_tf32(allow:bool=True):
+  # 在matmul和卷积中使用tf32 Tensor Core (需要Ampere+)
+  # https://docs.pytorch.ac.cn/docs/2.14/notes/cuda.html#tensorfloat-32-tf32-on-ampere-and-later-devices
+  if not 'new API':
+    method = 'tf32' if allow else 'ieee'
+    torch.backends.fp32_precision = method
+    torch.backends.cuda.matmul.fp32_precision = method
+    torch.backends.cudnn.fp32_precision = method
+    torch.backends.cudnn.conv.fp32_precision = method
+    torch.backends.cudnn.rnn.fp32_precision = method
+  else:
+    torch.backends.cuda.matmul.allow_tf32 = allow
+    torch.backends.cudnn.allow_tf32 = allow
+  if allow:
+    torch.set_float32_matmul_precision('medium') # bf16
+  else:
+    torch.set_float32_matmul_precision('highest')
+
+
+def enable_fp16_bf16_gemm_reduce(allow:bool=False):
+  # 在fp16/bf16的gemm中使用fp16/bf16累加，而非默认的fp32 (需要Volta+)
+  # https://docs.pytorch.ac.cn/docs/2.14/notes/cuda.html#reduced-precision-reduction-in-fp16-gemms
+  torch.backends.cuda.matmul.allow_fp16_accumulation = False  # 不强迫完全fp16，可能有精度问题
+  torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = allow
+  torch.backends.cuda.matmul.allow_bf16_reduced_precision_reduction = allow
+  torch.backends.cuda.allow_fp16_bf16_reduction_math_sdp(allow)
+
+
+def torch_backends_setup():
+  device_name = torch.cuda.get_device_name()
+  capability = torch.cuda.get_device_capability()
+  is_tf32_supported = torch.cuda.is_tf32_supported()
+
+  torch.backends.cudnn.enabled = True
+  torch.backends.cudnn.benchmark = True
+  torch.backends.cudnn.deterministic = False
+
+  # 若支持tf32则强开
+  #enable_tf32(is_tf32_supported)
+  # Volta以上强开fp16/bf16
+  #if capability >= (7, 0):
+  #  enable_fp16_bf16_gemm_reduce(True)
+  # 矿卡砍半精度，需强关fp16/bf16
+  if any([n in device_name for n in ['P106', 'P104', '30HX', '40HX']]):
+    enable_fp16_bf16_gemm_reduce(False)

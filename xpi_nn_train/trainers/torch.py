@@ -21,7 +21,10 @@ def run_train_native(model:nn.Module, train_loader:DataLoader, test_loader:DataL
     torch.backends.cudnn.allow_tf32 = True
     torch.backends.cudnn.deterministic = False
     torch.set_float32_matmul_precision('medium')
-    dtype = torch.bfloat16  # bf16 is better on cuda
+    if 'RTX 3060' in torch.cuda.get_device_name():
+      dtype = torch.bfloat16  # bf16 is better on TensorCore
+    else:
+      dtype = torch.float32
   else:
     torch.set_num_threads(torch.get_num_interop_threads())
     dtype = torch.float32  # fp16/bf16 on most SoC is slow
