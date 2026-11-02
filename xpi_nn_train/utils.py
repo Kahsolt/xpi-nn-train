@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+from argparse import Namespace
 
 BASE_PATH = Path(__file__).parent   # base path for pypi package
 ROOT_PATH = BASE_PATH.parent        # root path for git project
@@ -33,6 +34,18 @@ def seed_everything(seed:int=114514):
   np.random.seed(seed)
   torch.manual_seed(seed)
   torch.cuda.manual_seed(seed)
+
+
+def merge_namespaces(*ns:Namespace) -> Namespace:
+  if not ns: return Namespace()
+  if len(ns) == 1: return ns[0]
+  merged = Namespace()
+  for n in ns:
+    for k, v in vars(n).items():
+      if hasattr(merged, k):
+        raise ValueError(f'>> args conflict: {k}')
+      setattr(merged, k, v)
+  return merged
 
 
 SERIALIZERS = [

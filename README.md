@@ -1,10 +1,11 @@
 # xpi-nn-train
 
     A lightweight toolbox for NN model train on ARM SoC devices like RaspberryPi, OrangePi, LubanCat, etc.
+    Or just run a quick performance benchmark on any backends!
 
 ----
 
-**⚠ In most cases you'll NEVER train a model on low-end SoC(s), this repo is mainly for CPU benchmark purpose.** ;)
+**⚠ You'll NEVER wanna train a model on the low-end SoC(s), this repo is mainly for CPU/GPU performance benchmark purpose.** ;)
 
 ### Installation
 
@@ -12,27 +13,27 @@ You can either install from PyPI:
 
 ```shell
 # create venv (optional but recommended!!)
-conda create -n xpi python==3.13    # py3.10 or later
-conda activate xpi
-# install minimal version (torch, recommened!!)
-pip install xpi-nn-train
+mamba create -n xpi python==3.13    # py3.10 or later
+mamba activate xpi
+# install minimal version (only torch+torchvision, recommened!!)
+uv pip install xpi-nn-train
 # install full version (+lightning+peft)
-pip install xpi-nn-train[full]
+uv pip install xpi-nn-train[full]
 ```
 
 or install locally:
 
 ```shell
 # create venv (optional but recommended!!)
-conda create -n xpi python==3.13    # py3.10 or later
-conda activate xpi
+mamba create -n xpi python==3.13    # py3.10 or later
+mamba activate xpi
 # clone this repo
-git clone https://gitee.com/kahsolt/xpi-nn-train.git
+git clone https://github.com/Kahsolt/xpi-nn-train.git
 cd xpi-nn-train
 # install dependencies
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 # install locally
-pip install -e .
+uv pip install -e .
 ```
 
 ### Usage
@@ -59,7 +60,7 @@ python -m xpi_nn_train.examples.finetune_cifar10_mbv3_ddp
 
 ### Configurations
 
-ℹ We focus on CV models implemented in PyTorch & TorchVision
+ℹ So far we only focus on CV models implemented in PyTorch & TorchVision
 
 #### Envvars
 
@@ -70,7 +71,7 @@ python -m xpi_nn_train.examples.finetune_cifar10_mbv3_ddp
 
 | name | comment |
 | :-: | :-: |
-| torchvision    | clf |
+| torchvision    | ImageNet clf |
 | LeNet          | MNIST clf |
 | ESPCN          | lightweight sr |
 | MLP            |  |
@@ -83,9 +84,6 @@ python -m xpi_nn_train.examples.finetune_cifar10_mbv3_ddp
 | torch     | √ | x |
 | lightning | x | √ |
 
-### Tested Devices
+### ref
 
-- BCM2837: RaspberryPi 3B
-- H618: OrangePi Zero 3
-- RK3576: LubanCat3
-- RK3399: FMX1 Pro, MRK3399
+- xpi-nn-infer: https://github.com/Kahsolt/xpi-nn-infer

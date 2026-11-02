@@ -5,6 +5,8 @@ from argparse import ArgumentParser, Namespace
 
 import torch.nn as nn
 
+from xpi_nn_train.torch_utils import DEVICES, DTYPES
+
 
 def list_trainer_backends() -> list[str]:
   return [fp.stem for fp in Path(__file__).parent.iterdir() if fp.is_file() and fp.suffix == '.py' and not fp.stem.startswith('_')]
@@ -13,10 +15,12 @@ def list_trainer_backends() -> list[str]:
 def get_trainer_args() -> Namespace:
   parser = ArgumentParser()
   parser.add_argument('-K', '--backend', default='torch', choices=list_trainer_backends(), help='Trainer backend (default: %(default)s)')
+  parser.add_argument('-D', '--device', default='auto', choices=DEVICES, help='Device backend (default: %(default)s)')
+  parser.add_argument('-T', '--dtype', default='fp32', choices=DTYPES.keys(), help='Data type (default: %(default)s)')
   parser.add_argument('-N', '--num_classes', default=10, type=int, help='Num classes for cls model (default: %(default)s)')
   parser.add_argument('-E', '--epochs', default=5, type=int, help='Number of epochs (default: %(default)s)')
   parser.add_argument('-B', '--batch_size', default=32, type=int, help='Batch size (default: %(default)s)')
-  parser.add_argument('-g', '--grad_acc', default=4, type=int, help='Grad accumulate steps (default: %(default)s)')
+  parser.add_argument('-g', '--grad_acc', default=1, type=int, help='Grad accumulate steps (default: %(default)s)')
   parser.add_argument('-lr', '--learning_rate', default=2e-4, type=float, help='Learning rate (default: %(default)s)')
   parser.add_argument('-r', '--lora', default=0, type=int, help='LoRA rank (default: %(default)s)')
   parser.add_argument('-j', '--num_workers', default=0, type=int, help='Num workers (default: %(default)s)')
